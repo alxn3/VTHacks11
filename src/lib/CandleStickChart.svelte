@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import * as d3 from 'd3';
+	import Button from './Button.svelte';
 
 	let el: HTMLDivElement;
 
-	export let data: {
+	let from = new Date(0);
+
+	export let historyData: {
 		date: Date;
 		open: number;
 		high: number;
@@ -27,6 +30,8 @@
 		const marginRight = 30;
 		const marginBottom = 30;
 		const marginLeft = 40;
+
+		const data = historyData.filter((d) => d.date.getTime() > from.getTime());
 
 		const minDate = d3.min(data, (d) => d.date);
 		const maxDate = d3.max(data, (d) => d.date);
@@ -124,6 +129,35 @@
 	onMount(() => {
 		createChart();
 	});
+
+	let times: Record<string, number> = {
+		All: 0,
+		'10yr': Date.now() - 10 * 365 * 24 * 60 * 60 * 1000,
+		'5yr': Date.now() - 5 * 365 * 24 * 60 * 60 * 1000,
+		'1 yr': Date.now() - 365 * 24 * 60 * 60 * 1000,
+		'1 m': Date.now() - 30 * 24 * 60 * 60 * 1000,
+		'24 hr': Date.now() - 24 * 60 * 60 * 1000,
+		'12 hr': Date.now() - 12 * 60 * 60 * 1000,
+		'1 fr': Date.now() - 60 * 60 * 1000
+	};
 </script>
 
-<div class="w-full h-full bg-black p-4 rounded-lg" bind:this={el} />
+<div class="w-full h-full bg-black p-4 rounded-lg flex flex-col">
+	<div class="flex-1" bind:this={el} />
+	<!-- Range selector, All time, 10 years, 5 years, 1 year, month, day, hour -->
+	<div class="flex justify-between">
+		<div class="flex gap-1">
+			{#each Object.keys(times) as time}
+				<button
+					class="text-sm py-1 px-2 text-green-500"
+					on:click={() => {
+						from = new Date(times[time]);
+						createChart();
+					}}
+				>
+					{time}
+				</button>
+			{/each}
+		</div>
+	</div>
+</div>
