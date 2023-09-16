@@ -12,7 +12,7 @@
 		placeholder="Search for contracts"
 	/>
 	<Button class="hover:bg-neutral-800 transition-colors">or list your own</Button>
-	<div class="flex items-center justify-center">
+	<div class="flex items-center justify-center w-full">
 		<div class="grid grid-cols-3 gap-4 w-3/4">
 			{#each [1, 2, 3, 4, 5, 6] as i}
 				<ContractThumbnail on:click={() => console.log('Hello!')} />
