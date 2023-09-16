@@ -4,7 +4,7 @@
 </script>
 
 <NavBar />
-<div class="w-full bg-neutral-900 my-20">
+<div class="w-full my-20">
 	<div class="w-[min(95%,70rem)] mx-auto">
 		<slot />
 	</div>

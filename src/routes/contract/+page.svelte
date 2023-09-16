@@ -4,6 +4,7 @@
 	import CandleStickChart from '$lib/CandleStickChart.svelte';
 	import type { PageData } from './$types';
 	import { currentAccountStore } from '../../lib/store';
+	import Table from '$lib/Table.svelte';
 
 	let showForm = false;
 	let operation: 'buyForShares' | 'sellForShares' | 'buyAgainstShares' | 'sellAgainstShares' | '' =
@@ -101,6 +102,8 @@
 		</div>
 	</div>
 </div>
+
+<Table />
 
 <style>
 	input,
