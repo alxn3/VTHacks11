@@ -30,7 +30,13 @@ export const actions = {
 		};
 
 		const defaultHistoricalPrices = {
-			history: []
+			history: [
+				{
+					date: new Date().toJSON().slice(0,10).replace(/-/g,'/'),
+					for_price: parseFloat(dataObject['starting-price']),
+					against_price: parseFloat(dataObject['starting-price'])
+				}
+			]
 		}
 
 		let contractCollection = collection(db, 'contracts');	
