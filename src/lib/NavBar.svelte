@@ -1,189 +1,32 @@
 <script>
 	import { onMount } from 'svelte';
-	import detectEthereumProvider from '@metamask/detect-provider';
-	import { db } from '../services/firebase/firebase';
-	import {
-		addDoc,
-		collection,
-		doc,
-		getDoc,
-		getDocs,
-		query,
-		updateDoc,
-		where
-	} from 'firebase/firestore';
-	import Icon from '@iconify/svelte';
-	import { get, writable} from 'svelte/store';
-	import { currentAccountStore } from './store';
-	export let loggedIn = false;
 
-	let currentAccount = '';
+	import Icon from '@iconify/svelte';
+	import { get, writable } from 'svelte/store';
+	import { currentAccountStore } from './store';
+
+	import {
+		updateUserData,
+		addTokensToAccount,
+		subtractTokensFromAccount,
+		connectMeta,
+		accountData
+	} from './accountUtils';
+
+	export let loggedIn = false;
 	let addTokens = false;
-	let accountData = {};
 	let newTokens = 0;
 
-	const addTokensToAccount = async () => {
-		const q = query(collection(db, 'users'), where('uuid', '==', currentAccount));
-
-		getDocs(q)
-			.then((querySnapshot) => {
-				if (!querySnapshot.empty) {
-					// User with currentAccount exists
-					updateDoc(querySnapshot.docs[0].ref, {
-						tokens: querySnapshot.docs[0].data().tokens + newTokens
-					});
-				} else {
-					// No user with currentAccount found, create a new user
-					console.log('No such document!');
-				}
-			})
-			.then(() => {
-				addTokens = false;
-				newTokens = 0;
-				updateUserData();
-			})
-			.catch((error) => {
-				console.log('Error getting document:', error);
-			});
-	};
-
-	const subtractTokensFromAccount = async () => {
-		const q = query(collection(db, 'users'), where('uuid', '==', currentAccount));
-		if (accountData.tokens - newTokens < 0) {
-			console.log('Not enough tokens!');
-			return;
+	onMount(() => {
+		if (window.sessionStorage.getItem('loggedIn') === 'true') {
+			loggedIn = true;
+			if (window.sessionStorage.getItem('currentAccount') !== null)
+				currentAccountStore.set(window.sessionStorage.getItem('currentAccount'));
+			if (window.sessionStorage.getItem('accountData') !== null)
+				accountData.set(JSON.parse(window.sessionStorage.getItem('accountData')));
 		}
-		getDocs(q)
-			.then((querySnapshot) => {
-				if (!querySnapshot.empty) {
-					// User with currentAccount exists
-					updateDoc(querySnapshot.docs[0].ref, {
-						tokens: querySnapshot.docs[0].data().tokens - newTokens
-					});
-				} else {
-					// No user with currentAccount found, create a new user
-					console.log('No such document!');
-				}
-			})
-			.then(() => {
-				addTokens = false;
-				newTokens = 0;
-				updateUserData();
-			})
-			.catch((error) => {
-				console.log('Error getting document:', error);
-			});
-	};
-
-	const createUser = async () => {
-		let userCollection = collection(db, 'users');
-		await addDoc(userCollection, {
-			uuid: currentAccount,
-			trade_history: [],
-			tokens: 0,
-			created_contracts: [],
-			active_contracts: [],
-			joined: new Date()
-		})
-			.then(() => {
-				console.log('Document successfully written!');
-				accountData = {
-					uuid: currentAccount,
-					trade_history: [],
-					tokens: 0,
-					created_contracts: [],
-					active_contracts: [],
-					joined: new Date()
-				};
-			})
-			.catch((/** @type {any} */ error) => {
-				console.error('Error writing document: ', error);
-			});
-	};
-
-	const updateUserData = async () => {
-		const userRef = doc(db, 'users', currentAccount);
-		const q = query(collection(db, 'users'), where('uuid', '==', currentAccount));
-
-		const userSnap = await getDoc(userRef);
-
-		getDocs(q)
-			.then((querySnapshot) => {
-				if (!querySnapshot.empty) {
-					// User with currentAccount exists
-					console.log('User exists. Document data:', querySnapshot.docs[0].data());
-					accountData = querySnapshot.docs[0].data();
-				} else {
-					// No user with currentAccount found, create a new user
-					console.log('No such document!');
-				}
-			})
-			.catch((error) => {
-				console.log('Error getting document:', error);
-			});
-	};
-
-	const connectMeta = async () => {
-		detectEthereumProvider().then((provider) => {
-			if (provider) {
-				console.log('Ethereum successfully detected!');
-				provider
-					.request({ method: 'eth_requestAccounts' })
-					.then((/** @type {string[]} */ accounts) => {
-						currentAccount = accounts[0];
-						currentAccountStore.set(currentAccount);
-						console.log(currentAccount);
-
-						const q = query(collection(db, 'users'), where('uuid', '==', currentAccount));
-
-						getDocs(q)
-							.then((querySnapshot) => {
-								if (!querySnapshot.empty) {
-									// User with currentAccount exists
-									console.log('User exists. Document data:', querySnapshot.docs[0].data());
-									accountData = querySnapshot.docs[0].data();
-								} else {
-									// No user with currentAccount found, create a new user
-									console.log('No such document!');
-									createUser();
-								}
-							})
-                            .then(() => {
-                                loggedIn = true;
-                                window.sessionStorage.setItem('loggedIn', 'true');
-                                window.sessionStorage.setItem('currentAccount', currentAccount);
-                                window.sessionStorage.setItem('accountData', JSON.stringify(accountData));
-                            })
-							.catch((error) => {
-								console.log('Error getting document:', error);
-							});
-						
-					})
-					.catch((/** @type {{ code: number; }} */ err) => {
-						if (err.code === 4001) {
-							// EIP-1193 userRejectedRequest error
-							console.log('Please connect to MetaMask.');
-						} else {
-							console.error(err);
-						}
-					});
-			} else {
-				console.error('Please install MetaMask!');
-			}
-		});
-	};
-
-    onMount (() => {
-        if (window.sessionStorage.getItem('loggedIn') === 'true') {
-            loggedIn = true;
-            if (window.sessionStorage.getItem('currentAccount') !== null)
-                currentAccount = window.sessionStorage.getItem('currentAccount');
-            if (window.sessionStorage.getItem('accountData') !== null)
-                accountData = JSON.parse(window.sessionStorage.getItem('accountData'));
-        }
-        updateUserData();
-    })
-
+		updateUserData();
+	});
 </script>
 
 <nav class="w-full bg-neutral-900 text-white">
@@ -196,7 +39,7 @@
 				{#if loggedIn}
 					<button
 						class="mx-4 text-lg border-2 border-black p-2 rounded-xl hover:border-gray-700 transition-all"
-						on:click={() => (addTokens = !addTokens)}>tokens: {accountData.tokens}</button
+						on:click={() => (addTokens = !addTokens)}>tokens: {$accountData.tokens}</button
 					>
 					<a href="/profile">
 						<button
@@ -224,7 +67,7 @@
 			</button>
 			<div class="m-8 space-y-2">
 				<h1>Transfer funds</h1>
-				<h1>Current balance: {accountData.tokens} tokens</h1>
+				<h1>Current balance: {$accountData.tokens} tokens</h1>
 				<h1>Tokens:</h1>
 				<input
 					type="number"
@@ -236,11 +79,11 @@
 				<div class="flex justify-between">
 					<button
 						class="bg-black text-white p-2 rounded-xl border-2 border-opacity-0 hover:border-opacity-100 transition-all border-gray-700"
-						on:click={addTokensToAccount}>Transfer in</button
+						on:click={() => addTokensToAccount(newTokens)}>Transfer in</button
 					>
 					<button
 						class="bg-black text-white p-2 rounded-xl border-2 border-opacity-0 hover:border-opacity-100 transition-all border-gray-700"
-						on:click={subtractTokensFromAccount}>Transfer out</button
+						on:click={() => subtractTokensFromAccount(newTokens)}>Transfer out</button
 					>
 				</div>
 			</div>
