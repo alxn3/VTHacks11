@@ -5,6 +5,19 @@
 	import type { PageData } from './$types';
 	import { currentAccountStore } from '../../lib/store';
 	import Table from '$lib/Table.svelte';
+	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
+	import { db } from '../../services/firebase/firebase';
+	import {
+		addDoc,
+		collection,
+		doc,
+		getDoc,
+		getDocs,
+		query,
+		updateDoc,
+		where
+	} from 'firebase/firestore';
 	export let post: { title: string; content: string };
 
 	let showForm = false;
@@ -19,8 +32,22 @@
 	}
 
 	let currentUuid;
-	currentAccountStore.subscribe((value) => {
-		currentUuid = value;
+	let contractId: string | null;
+	onMount(() => {
+		const url = new URL(window.location.href);
+		const id = url.searchParams.get('id');
+		contractId = id;
+
+		const q = query(
+			collection(db, 'users'),
+			where('uuid', '==', window.sessionStorage.getItem('currentAccount'))
+		);
+		// get docref id and store it in currentUuid
+		getDocs(q).then((querySnapshot) => {
+			if (!querySnapshot.empty) {
+				currentUuid = querySnapshot.docs[0].id;
+			}
+		});
 	});
 
 	export let data: PageData;
@@ -81,15 +108,43 @@
 
 				<!-- Hidden input for currentUuid -->
 				<input type="hidden" name="currentUuid" bind:value={currentUuid} />
+				<input type="hidden" name="contractId" bind:value={contractId} />
 
-				<label for="contractId">Contract ID</label>
-				<input type="text" name="contractId" id="contractId" placeholder="Contract ID" required />
-
+				<!-- <label for="contractId">Contract ID</label>
+				<input type="text" name="contractId" id="contractId" placeholder="Contract ID" required /> -->
+				<label for="ordertype">Order Type</label>
+				<!-- selection buttons for market order or limit -->
+				<div class="flex gap-2">
+					<label for="market">
+						<input type="radio" name="ordertype" id="market" value="market" required checked />
+						Market
+					</label>
+					<label for="limit">
+						<input type="radio" name="ordertype" id="limit" value="limit" required />
+						Limit
+					</label>
+				</div>
 				<label for="price">Price</label>
-				<input type="number" name="price" id="price" placeholder="Price" min="1" required />
+				<input
+					type="number"
+					name="price"
+					id="price"
+					placeholder="Price"
+					min="1"
+					required
+					step="0.01"
+				/>
 
 				<label for="amount">Amount</label>
-				<input type="number" name="amount" id="amount" placeholder="Amount" min="1" required />
+				<input
+					type="number"
+					name="amount"
+					id="amount"
+					placeholder="Amount"
+					min="1"
+					required
+					step="0.01"
+				/>
 
 				<button class="w-fit p-2 text-2xl" type="submit">Submit</button>
 			</form>
