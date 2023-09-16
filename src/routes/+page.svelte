@@ -5,7 +5,7 @@
 
 <div class="flex flex-col justify-center items-center gap-6 text-white">
 	<h1 class="font-light text-5xl">Bet on people you know</h1>
-	<p>the first web3 contract-based prediction model</p>
+	<p>the first web3 contract-based prediction market</p>
 	<input
 		type="text"
 		class="w-4/5 h-12 rounded-md border-2 border-neutral-700 bg-black p-2"
