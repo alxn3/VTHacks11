@@ -11,12 +11,12 @@ import {
 	where
 } from 'firebase/firestore';
 
-import { writable } from 'svelte/store';
+import { currentAccountStore } from './store';
 
-export let currentAccount = '';
-export const currentAccountStore = writable(currentAccount);
-export let loggedIn = false;
-export let accountData = writable({});
+import { get, writable } from 'svelte/store';
+
+export const loggedIn = writable(false);
+export const accountData = writable({});
 
 export const addTokensToAccount = async (numTokens: number) => {
 	const q = query(collection(db, 'users'), where('uuid', '==', currentAccount));
@@ -43,7 +43,7 @@ export const addTokensToAccount = async (numTokens: number) => {
 
 export const subtractTokensFromAccount = async (numTokens: number) => {
 	const q = query(collection(db, 'users'), where('uuid', '==', currentAccount));
-	if (accountData.tokens - numTokens < 0) {
+	if (get(accountData).tokens - numTokens < 0) {
 		console.log('Not enough tokens!');
 		return;
 	}
@@ -79,14 +79,14 @@ export const createUser = async () => {
 	})
 		.then(() => {
 			console.log('Document successfully written!');
-			accountData = {
+			accountData.set({
 				uuid: currentAccount,
 				trade_history: [],
 				tokens: 0,
 				created_contracts: [],
 				active_contracts: [],
 				joined: new Date()
-			};
+			});
 		})
 		.catch((/** @type {any} */ error) => {
 			console.error('Error writing document: ', error);
@@ -104,7 +104,7 @@ export const updateUserData = async () => {
 			if (!querySnapshot.empty) {
 				// User with currentAccount exists
 				console.log('User exists. Document data:', querySnapshot.docs[0].data());
-				accountData = querySnapshot.docs[0].data();
+				accountData.set(querySnapshot.docs[0].data());
 			} else {
 				// No user with currentAccount found, create a new user
 				console.log('No such document!');
@@ -141,7 +141,7 @@ export const connectMeta = async () => {
 							}
 						})
 						.then(() => {
-							loggedIn = true;
+							loggedIn.set(true);
 							window.sessionStorage.setItem('loggedIn', 'true');
 							window.sessionStorage.setItem('currentAccount', currentAccount);
 							window.sessionStorage.setItem('accountData', JSON.stringify(accountData));
