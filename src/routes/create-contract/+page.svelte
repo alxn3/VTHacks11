@@ -4,7 +4,7 @@
 
 <div class="space-y-4">
 	<h1>Create a Contract</h1>
-	<form class="flex flex-col gap-2">
+	<form class="flex flex-col gap-2" method="POST">
 		<label for="title">Title</label>
 		<input type="text" name="title" id="title" placeholder="Title" />
 		<label for="description">Background and Due Diligence</label>
