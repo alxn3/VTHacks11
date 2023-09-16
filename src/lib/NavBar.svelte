@@ -13,7 +13,8 @@
 		where
 	} from 'firebase/firestore';
 	import Icon from '@iconify/svelte';
-	import { get } from 'svelte/store';
+	import { get, writable} from 'svelte/store';
+	import { currentAccountStore } from './store';
 	export let loggedIn = false;
 
 	let currentAccount = '';
@@ -130,6 +131,7 @@
 					.request({ method: 'eth_requestAccounts' })
 					.then((/** @type {string[]} */ accounts) => {
 						currentAccount = accounts[0];
+						currentAccountStore.set(currentAccount);
 						console.log(currentAccount);
 
 						const q = query(collection(db, 'users'), where('uuid', '==', currentAccount));
