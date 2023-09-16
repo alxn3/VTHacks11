@@ -4,11 +4,8 @@
 	import CandleStickChart from '$lib/CandleStickChart.svelte';
 	import type { PageData } from './$types';
 	import { currentAccountStore } from '../../lib/store';
-<<<<<<< Updated upstream
 	import Table from '$lib/Table.svelte';
-=======
 	export let post: { title: string, content: string };
->>>>>>> Stashed changes
 
 	let showForm = false;
 	let operation: 'buyForShares' | 'sellForShares' | 'buyAgainstShares' | 'sellAgainstShares' | '' =
@@ -32,7 +29,7 @@
 <div class="flex flex-col gap-8 text-xl font-light w-full">
 	<div class="flex justify-between">
 		<div class="space-y-2">
-			<h1 class="">{post?.title}</h1>
+			<h1 class="">{data.title}</h1>
 			<BelieveCope />
 		</div>
 		<div class="w-10" />
@@ -102,12 +99,15 @@
 	<div>
 		<h1>Background & Due Diligence</h1>
 		<div class="my-2 p-2 bg-black rounded-xl text-neutral-300 font-thin">
-			{@html data.props?.post.content}
+			{@html data.description}
 		</div>
 	</div>
 </div>
 
-<Table />
+<Table data={data.against_orderbook.asks}/>
+<Table data={data.against_orderbook.bids}/>
+<Table data={data.for_orderbook.asks}/>
+<Table data={data.for_orderbook.bids}/>
 
 <style>
 	input,

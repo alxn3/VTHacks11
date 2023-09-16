@@ -44,8 +44,6 @@
 			.range([marginLeft, width - marginRight])
 			.padding(0.2);
 
-		console.log(x.domain(), x.range());
-
 		const y = d3
 			.scaleLog()
 			.domain([d3.min(data, (d) => d.low), d3.max(data, (d) => d.high)] as [number, number])
@@ -93,7 +91,6 @@
 			.data(data)
 			.join('g')
 			.attr('transform', (d) => {
-				console.log(d.date, x(d.date));
 				return `translate(${x(d.date)},0)`;
 			});
 

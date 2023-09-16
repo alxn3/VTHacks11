@@ -1,8 +1,8 @@
-import type { PageLoad, PageData } from './$types';
+import type { PageLoad } from './$types';
 import { db } from '../../services/firebase/firebase'
 import { getDoc, doc } from 'firebase/firestore';
 
-export const load: PageLoad = async ({ params, url }) => {
+export const load: PageLoad = async ({ url }) => {
     const id = url.searchParams.get('id');
     if (!id) {
         return { status: 400, body: 'ID not provided' };
@@ -10,18 +10,10 @@ export const load: PageLoad = async ({ params, url }) => {
 
     try {
         console.log(id);
-        const contractDocRef = doc(db, 'contracts', id);
-        const contractSnapshot = await getDoc(contractDocRef);
-
+        const contractSnapshot = await getDoc(doc(db, "contracts", id));
+        console.log(contractSnapshot.data());
         if (contractSnapshot.exists()) {
-            return {
-                props: {
-                    post: {
-                        title: contractSnapshot.data().title,
-                        content: contractSnapshot.data().description
-                    }
-                }
-            };
+            return contractSnapshot.data();
         } else {
             return { status: 404, body: 'Contract not found' };
         }
