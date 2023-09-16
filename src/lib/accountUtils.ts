@@ -133,7 +133,7 @@ export const connectMeta = async () => {
 							if (!querySnapshot.empty) {
 								// User with currentAccount exists
 								console.log('User exists. Document data:', querySnapshot.docs[0].data());
-								accountData = querySnapshot.docs[0].data();
+								accountData.set(querySnapshot.docs[0].data());
 							} else {
 								// No user with currentAccount found, create a new user
 								console.log('No such document!');

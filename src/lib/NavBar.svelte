@@ -41,7 +41,7 @@
 				{#if loggedIn}
 					<button
 						class="mx-4 text-lg border-2 border-black p-2 rounded-xl hover:border-gray-700 transition-all"
-						on:click={() => (addTokens = !addTokens)}>tokens: {accountData.tokens}</button
+						on:click={() => (addTokens = !addTokens)}>tokens: {$accountData.tokens}</button
 					>
 					<a href="/profile">
 						<button
