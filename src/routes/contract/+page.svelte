@@ -97,12 +97,7 @@
 	<div>
 		<h1>Background & Due Diligence</h1>
 		<div class="my-2 p-2 bg-black rounded-xl text-neutral-300 font-thin">
-			<p>
-				Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam asperiores quae voluptatem
-				illum facilis earum, a deserunt officia veritatis. Id aperiam reprehenderit quis maiores
-				earum odit illum neque amet provident iste odio rem eveniet incidunt fugit ducimus, sequi
-				dolor aut quibusdam vitae a at, fuga qui deleniti. Amet, illo impedit.
-			</p>
+			{@html data.props?.post.content}
 		</div>
 	</div>
 </div>
