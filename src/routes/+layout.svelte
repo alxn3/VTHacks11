@@ -2,8 +2,13 @@
 	import '../app.css';
 	import NavBar from '../lib/NavBar.svelte';
 </script>
+
 <NavBar />
-<slot />
+<div class="w-full bg-neutral-900 my-20">
+	<div class="w-[min(95%,70rem)] mx-auto">
+		<slot />
+	</div>
+</div>
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
