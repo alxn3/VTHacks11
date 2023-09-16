@@ -148,10 +148,16 @@
 									createUser();
 								}
 							})
+                            .then(() => {
+                                loggedIn = true;
+                                window.sessionStorage.setItem('loggedIn', 'true');
+                                window.sessionStorage.setItem('currentAccount', currentAccount);
+                                window.sessionStorage.setItem('accountData', JSON.stringify(accountData));
+                            })
 							.catch((error) => {
 								console.log('Error getting document:', error);
 							});
-						loggedIn = true;
+						
 					})
 					.catch((/** @type {{ code: number; }} */ err) => {
 						if (err.code === 4001) {
@@ -166,6 +172,18 @@
 			}
 		});
 	};
+
+    onMount (() => {
+        if (window.sessionStorage.getItem('loggedIn') === 'true') {
+            loggedIn = true;
+            if (window.sessionStorage.getItem('currentAccount') !== null)
+                currentAccount = window.sessionStorage.getItem('currentAccount');
+            if (window.sessionStorage.getItem('accountData') !== null)
+                accountData = JSON.parse(window.sessionStorage.getItem('accountData'));
+        }
+        updateUserData();
+    })
+
 </script>
 
 <nav class="w-full bg-neutral-900 text-white">
