@@ -1,9 +1,13 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: ['./src/**/*.{html,js,svelte,ts}'],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
+import defaultTheme from 'tailwindcss/defaultTheme';
 
+export default {
+	content: ['./src/**/*.{html,js,svelte,ts}'],
+	theme: {
+		fontFamily: {
+			sans: ['Inter', ...defaultTheme.fontFamily.sans]
+		},
+		extend: {}
+	},
+	plugins: []
+};
