@@ -4,6 +4,25 @@
 	import CandleStickChart from '$lib/CandleStickChart.svelte';
 
 	export let title = 'Lorem ipsum dolor sit amet consectetur adipisicing elit.';
+	import { currentAccountStore } from '../../lib/store';
+
+	export let title = 'Lorem ipsum dolor sit amet consectetur adipisicing elit.';
+
+	let showForm = false;
+	let operation: 'buyForShares' | 'sellForShares' | 'buyAgainstShares' | 'sellAgainstShares' | '' =
+		'';
+
+	function toggleForm(
+		op: 'buyForShares' | 'sellForShares' | 'buyAgainstShares' | 'sellAgainstShares'
+	) {
+		operation = op;
+		showForm = true;
+	}
+
+	let currentUuid;
+	currentAccountStore.subscribe((value) => {
+		currentUuid = value;
+	});
 </script>
 
 <div class="flex flex-col gap-8 text-xl font-light w-full">
@@ -29,16 +48,53 @@
 		<div class="grid grid-cols-[auto,auto,auto,auto,1fr] grid-rows-3 gap-x-3 gap-y-1">
 			<p>Believe:</p>
 			<p class="text-green-500">10 Shares</p>
-			<Button class="text-sm py-1 px-2 text-green-500">Buy</Button>
-			<Button class="text-sm py-1 px-2 text-green-500">Sell</Button>
+			<Button class="text-sm py-1 px-2 text-green-500" on:click={() => toggleForm('buyForShares')}
+				>Buy</Button
+			>
+			<Button class="text-sm py-1 px-2 text-green-500" on:click={() => toggleForm('sellForShares')}
+				>Sell</Button
+			>
 			<p class="text-right">8000</p>
 			<p>Cope:</p>
 			<p class="text-red-500">10 Shares</p>
-			<Button class="text-sm py-1 px-2 text-red-500">Buy</Button>
-			<Button class="text-sm py-1 px-2 text-red-500">Sell</Button>
+			<Button class="text-sm py-1 px-2 text-red-500" on:click={() => toggleForm('buyAgainstShares')}
+				>Buy</Button
+			>
+			<Button
+				class="text-sm py-1 px-2 text-red-500"
+				on:click={() => toggleForm('sellAgainstShares')}>Sell</Button
+			>
 			<p class="text-right">6123</p>
 		</div>
 	</div>
+
+	{#if showForm}
+		<div class="space-y-4">
+			{#if operation === 'buyForShares' || operation === 'sellForShares'}
+				<h1>{operation === 'buyForShares' ? 'Buy' : 'Sell'} Believe Shares</h1>
+			{:else}
+				<h1>{operation === 'buyAgainstShares' ? 'Buy' : 'Sell'} Cope Shares</h1>
+			{/if}
+			<form class="flex flex-col gap-2" method="POST">
+				<input type="hidden" name="actionType" bind:value={operation} />
+
+				<!-- Hidden input for currentUuid -->
+				<input type="hidden" name="currentUuid" bind:value={currentUuid} />
+
+				<label for="contractId">Contract ID</label>
+				<input type="text" name="contractId" id="contractId" placeholder="Contract ID" required />
+
+				<label for="price">Price</label>
+				<input type="number" name="price" id="price" placeholder="Price" min="1" required />
+
+				<label for="amount">Amount</label>
+				<input type="number" name="amount" id="amount" placeholder="Amount" min="1" required />
+
+				<button class="w-fit p-2 text-2xl" type="submit">Submit</button>
+			</form>
+		</div>
+	{/if}
+
 	<div>
 		<h1>Background & Due Diligence</h1>
 		<div class="my-2 p-2 bg-black rounded-xl text-neutral-300 font-thin">
@@ -51,3 +107,16 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	input,
+	textarea {
+		@apply bg-black rounded-md p-2 mb-4;
+	}
+	h1 {
+		@apply text-white font-light text-3xl;
+	}
+	label {
+		@apply text-white font-light text-xl;
+	}
+</style>
