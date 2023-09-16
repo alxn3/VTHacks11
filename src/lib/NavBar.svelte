@@ -23,7 +23,7 @@
 		if (window.sessionStorage.getItem('loggedIn') === 'true') {
 			loggedIn = true;
 			if (window.sessionStorage.getItem('currentAccount') !== null)
-				currentAccount = window.sessionStorage.getItem('currentAccount');
+				currentAccountStore.set(window.sessionStorage.getItem('currentAccount'));
 			if (window.sessionStorage.getItem('accountData') !== null)
 				accountData.set(JSON.parse(window.sessionStorage.getItem('accountData')));
 		}
