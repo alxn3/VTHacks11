@@ -3,5 +3,5 @@
 </script>
 
 <div>
-	{JSON.stringify(accountData)}
+	{JSON.stringify($accountData)}
 </div>
