@@ -1,7 +1,8 @@
 <script lang="ts">
 	import '../app.css';
+	import NavBar from '../lib/NavBar.svelte';
 </script>
-
+<NavBar />
 <slot />
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
