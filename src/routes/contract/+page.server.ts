@@ -81,35 +81,38 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
                 orderbook.splice(i, 1);
                 amtFilled = order.amount;
             }
-
-            let userDoc = doc(db, 'users', order.user);
-            let userDocData = await getDoc(userDoc);
-            if (!userDocData.exists()) {
-                console.error("User does not exist");
-                return;
-            }
-            // update trade history and current contracts of user who owned the order
-            let userTradeHistory = userDocData.data().trade_history;
-            let userCurrentContracts = userDocData.data().current_contracts;
-            let userCurrentContractIndex = userCurrentContracts.findIndex(contract => contract.uuid === contractId);
-            let userCurrentContract = userCurrentContracts[userCurrentContractIndex];
-            userCurrentContract.amount -= amtFilled;
-            userCurrentContracts[userCurrentContractIndex] = userCurrentContract;
-            userTradeHistory.push({
-                uuid: contractId,
-                date: new Date(),
-                price: order.price,
-                amount: order.amount,
-                type: operation
-            });
-            // filter out contracts with 0 amount
-            userCurrentContracts = userCurrentContracts.filter(contract => contract.amount > 0);
             let nettokens = order.amount * order.price * ((operation === "buy") ? -1 : 1);
-            await updateDoc(userDoc, {
-                trade_history: userTradeHistory,
-                current_contracts: userCurrentContracts,
-                tokens: userDocData.data().tokens + nettokens*-1
-            });
+            if (order.user != "")
+            {
+                let userDoc = doc(db, 'users', order.user);
+                let userDocData = await getDoc(userDoc);
+                if (!userDocData.exists()) {
+                    console.error("User does not exist");
+                    return;
+                }
+                // update trade history and current contracts of user who owned the order
+                let userTradeHistory = userDocData.data().trade_history;
+                let userCurrentContracts = userDocData.data().current_contracts;
+                let userCurrentContractIndex = userCurrentContracts.findIndex(contract => contract.uuid === contractId);
+                let userCurrentContract = userCurrentContracts[userCurrentContractIndex];
+                userCurrentContract.amount -= amtFilled;
+                userCurrentContracts[userCurrentContractIndex] = userCurrentContract;
+                userTradeHistory.push({
+                    uuid: contractId,
+                    date: new Date(),
+                    price: order.price,
+                    amount: order.amount,
+                    type: operation
+                });
+                // filter out contracts with 0 amount
+                userCurrentContracts = userCurrentContracts.filter(contract => contract.amount > 0);
+                await updateDoc(userDoc, {
+                    trade_history: userTradeHistory,
+                    current_contracts: userCurrentContracts,
+                    tokens: userDocData.data().tokens + nettokens*-1
+                });
+            }
+            
             if (operation === "buy") {
                 newContracts.push({
                     uuid: contractId,

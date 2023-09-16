@@ -1,7 +1,7 @@
 import { onMount } from 'svelte';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { db } from '../../services/firebase/firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, updateDoc } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid'; 
 import { contractUUIDs } from './contractStore.svelte'; 
 
@@ -44,7 +44,6 @@ export const actions = {
 		var utc = new Date().toJSON().slice(0,10).replace(/-/g,'/');
 
 		await addDoc(contractCollection, {  
-			id: contractId,
 			title: dataObject['title'],
 			description: dataObject['description'],
 			startingPrice: parseFloat(dataObject['starting-price']),
@@ -56,10 +55,14 @@ export const actions = {
 			for_historicalPrices: defaultHistoricalPrices,
 			against_historicalPrices: defaultHistoricalPrices
 		})
-		.then(() => {
+		.then((docRef) => {
 			console.log('Document successfully written!');
 			// Push the contract's UUID to the Svelte store
+			let contractId = docRef.id;
 			contractUUIDs.update(ids => [...ids, contractId]);
+			updateDoc(docRef, {
+				id: contractId
+			});
 		})
 		.catch((error) => {
 			console.error('Error writing document: ', error);
