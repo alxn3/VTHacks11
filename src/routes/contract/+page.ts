@@ -9,6 +9,7 @@ export const load: PageLoad = async ({ params, url }) => {
     }
 
     try {
+        console.log(id);
         const contractDocRef = doc(db, 'contracts', id);
         const contractSnapshot = await getDoc(contractDocRef);
 
