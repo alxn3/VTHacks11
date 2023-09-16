@@ -33,6 +33,7 @@
   "type": "module",
   "dependencies": {
     "@metamask/detect-provider": "^2.0.0",
-    "@tabler/icons-svelte": "^2.34.0"
+    "@tabler/icons-svelte": "^2.34.0",
+    "firebase": "^10.4.0"
   }
 }
