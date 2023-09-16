@@ -12,18 +12,25 @@ export const actions = {
 
 		const contractId = uuidv4();
 
+		for (let entry of formDataEntries.entries()) {
+			const [key, value] = entry;
+			dataObject[key] = value;
+		}
+
 		const defaultForOrderbook = {
-			bids: [],
-			asks: []
+			bids: [
+			],
+			asks: [
+				{
+					price: parseFloat(dataObject['starting-price']),
+					amount: parseInt(dataObject['volume']),
+					user: ""
+				}
+			]
 		};
 
 		const defaultHistoricalPrices = {
 			history: []
-		}
-
-		for (let entry of formDataEntries.entries()) {
-			const [key, value] = entry;
-			dataObject[key] = value;
 		}
 
 		let contractCollection = collection(db, 'contracts');	
