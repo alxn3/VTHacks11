@@ -17,8 +17,6 @@
 	let addTokens = false;
 	let newTokens = 0;
 
-	let currentAccount = '';
-
 	onMount(() => {
 		if (window.sessionStorage.getItem('loggedIn') === 'true') {
 			loggedIn = true;

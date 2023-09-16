@@ -19,7 +19,7 @@ export const loggedIn = writable(false);
 export const accountData = writable({});
 
 export const addTokensToAccount = async (numTokens: number) => {
-	const q = query(collection(db, 'users'), where('uuid', '==', currentAccount));
+	const q = query(collection(db, 'users'), where('uuid', '==', get(currentAccountStore)));
 
 	getDocs(q)
 		.then((querySnapshot) => {
@@ -42,7 +42,7 @@ export const addTokensToAccount = async (numTokens: number) => {
 };
 
 export const subtractTokensFromAccount = async (numTokens: number) => {
-	const q = query(collection(db, 'users'), where('uuid', '==', currentAccount));
+	const q = query(collection(db, 'users'), where('uuid', '==', get(currentAccountStore)));
 	if (get(accountData).tokens - numTokens < 0) {
 		console.log('Not enough tokens!');
 		return;
@@ -70,7 +70,7 @@ export const subtractTokensFromAccount = async (numTokens: number) => {
 export const createUser = async () => {
 	let userCollection = collection(db, 'users');
 	await addDoc(userCollection, {
-		uuid: currentAccount,
+		uuid: get(currentAccountStore),
 		trade_history: [],
 		tokens: 0,
 		created_contracts: [],
@@ -80,7 +80,7 @@ export const createUser = async () => {
 		.then(() => {
 			console.log('Document successfully written!');
 			accountData.set({
-				uuid: currentAccount,
+				uuid: get(currentAccountStore),
 				trade_history: [],
 				tokens: 0,
 				created_contracts: [],
@@ -94,8 +94,8 @@ export const createUser = async () => {
 };
 
 export const updateUserData = async () => {
-	const userRef = doc(db, 'users', currentAccount);
-	const q = query(collection(db, 'users'), where('uuid', '==', currentAccount));
+	const userRef = doc(db, 'users', get(currentAccountStore));
+	const q = query(collection(db, 'users'), where('uuid', '==', get(currentAccountStore)));
 
 	const userSnap = await getDoc(userRef);
 
