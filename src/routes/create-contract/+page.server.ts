@@ -37,7 +37,7 @@ export const actions = {
 			startingPrice: parseFloat(dataObject['starting-price']),
 			volume: parseInt(dataObject['volume']),
 			for_orderbook: defaultForOrderbook, 
-			ask_orderbook: defaultForOrderbook, 
+			against_orderbook: defaultForOrderbook, 
 			start_date: utc, 
 			end_date: "", 
 			for_historicalPrices: defaultHistoricalPrices,
