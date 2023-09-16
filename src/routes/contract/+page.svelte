@@ -81,9 +81,7 @@
 
 				<!-- Hidden input for currentUuid -->
 				<input type="hidden" name="currentUuid" bind:value={currentUuid} />
-
-				<label for="contractId">Contract ID</label>
-				<input type="text" name="contractId" id="contractId" placeholder="Contract ID" required />
+				<input type="hidden" name="contractId" id="contractId" bind:value={data.id}/>
 
 				<label for="price">Price</label>
 				<input type="number" name="price" id="price" placeholder="Price" min="1" required />
