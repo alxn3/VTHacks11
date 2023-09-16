@@ -1,8 +1,7 @@
 import { onMount } from 'svelte';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { db } from '../../services/firebase/firebase';
-import { addDoc, collection, getDocs} from 'firebase/firestore';
-import { v4 as uuidv4 } from 'uuid'; 
+import { addDoc, collection, updateDoc, getDocs} from 'firebase/firestore';
 import { contractUUIDs } from './contractStore.svelte'; 
 import { doc, setDoc } from 'firebase/firestore';
 export const actions = {
@@ -13,8 +12,12 @@ export const actions = {
 		let contractCollection = collection(db, 'contracts');
 
 		const newContractRef = doc(contractCollection);  // Create a new document reference with an auto-generated ID
-		const contractId = newContractRef.id;
+		
 
+		for (let entry of formDataEntries.entries()) {
+			const [key, value] = entry;
+			dataObject[key] = value;
+		}
 		const defaultForOrderbook = {
 			bids: [
 			],
@@ -37,15 +40,10 @@ export const actions = {
 			]
 		}
 
-		for (let entry of formDataEntries.entries()) {
-			const [key, value] = entry;
-			dataObject[key] = value;
-		}	
 
 		var utc = new Date().toJSON().slice(0,10).replace(/-/g,'/');
 
-		await setDoc(newContractRef, {  
-			id: contractId,
+		await addDoc(contractCollection, {  
 			title: dataObject['title'],
 			description: dataObject['description'],
 			startingPrice: parseFloat(dataObject['starting-price']),
@@ -57,9 +55,14 @@ export const actions = {
 			for_historicalPrices: defaultHistoricalPrices,
 			against_historicalPrices: defaultHistoricalPrices
 		})
-		.then(() => {
+		.then((docRef) => {
 			console.log('Document successfully written!');
+			// Push the contract's UUID to the Svelte store
+			const contractId = docRef.id;
 			contractUUIDs.update(ids => [...ids, contractId]);
+			updateDoc(docRef, {
+				id: contractId
+			});
 		})
 		.catch((error) => {
 			console.error('Error writing document: ', error);
