@@ -8,7 +8,7 @@
 	class="text-left flex flex-col justify-between border-2 p-3 text-gray-300 bg-black font-thin rounded-xl text-lg h-full border-neutral-700"
 	on:click
 >
-		<BelieveCope/>
+	<BelieveCope />
 	<p class="text-white font-light overflow-y-auto">{title}</p>
 	<p>end date: {endDate.toLocaleDateString()}</p>
 </button>

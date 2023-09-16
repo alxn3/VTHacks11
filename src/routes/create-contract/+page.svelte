@@ -8,7 +8,7 @@
 		<label for="title">Title</label>
 		<input type="text" name="title" id="title" placeholder="Title" />
 		<label for="description">Background and Due Diligence</label>
-		<textarea name="description" id="description" placeholder="Desciption" cols="30" rows="10"  />
+		<textarea name="description" id="description" placeholder="Desciption" cols="30" rows="10" />
 		<label for="starting-price">Starting Price (min 10)</label>
 		<input type="number" name="starting-price" id="starting-price" min="10" placeholder="10" />
 		<label for="volume">Volume (min 100)</label>
