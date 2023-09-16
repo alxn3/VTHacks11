@@ -2,7 +2,6 @@ import { onMount } from 'svelte';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { db } from '../../services/firebase/firebase';
 import { addDoc, collection, updateDoc, getDocs} from 'firebase/firestore';
-import { v4 as uuidv4 } from 'uuid'; 
 import { contractUUIDs } from './contractStore.svelte'; 
 import { doc, setDoc } from 'firebase/firestore';
 export const actions = {
@@ -15,6 +14,10 @@ export const actions = {
 		const newContractRef = doc(contractCollection);  // Create a new document reference with an auto-generated ID
 		const contractId = newContractRef.id;
 
+		for (let entry of formDataEntries.entries()) {
+			const [key, value] = entry;
+			dataObject[key] = value;
+		}
 		const defaultForOrderbook = {
 			bids: [
 			],
@@ -37,15 +40,10 @@ export const actions = {
 			]
 		}
 
-		for (let entry of formDataEntries.entries()) {
-			const [key, value] = entry;
-			dataObject[key] = value;
-		}	
 
 		var utc = new Date().toJSON().slice(0,10).replace(/-/g,'/');
 
 		await addDoc(contractCollection, {  
-			id: contractId,
 			title: dataObject['title'],
 			description: dataObject['description'],
 			startingPrice: parseFloat(dataObject['starting-price']),
