@@ -12,7 +12,7 @@ export const actions = {
 		let contractCollection = collection(db, 'contracts');
 
 		const newContractRef = doc(contractCollection);  // Create a new document reference with an auto-generated ID
-		const contractId = newContractRef.id;
+		
 
 		for (let entry of formDataEntries.entries()) {
 			const [key, value] = entry;
@@ -58,6 +58,7 @@ export const actions = {
 		.then((docRef) => {
 			console.log('Document successfully written!');
 			// Push the contract's UUID to the Svelte store
+			const contractId = docRef.id;
 			contractUUIDs.update(ids => [...ids, contractId]);
 			updateDoc(docRef, {
 				id: contractId
