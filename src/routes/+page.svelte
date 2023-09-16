@@ -1,6 +1,18 @@
 <script>
+	import { onMount } from 'svelte';
+	import { db } from '../services/firebase/firebase';
+	import { getDocs, collection } from 'firebase/firestore';
 	import Button from '$lib/Button.svelte';
 	import ContractThumbnail from '$lib/ContractThumbnail.svelte';
+
+	let contracts = [];
+
+	onMount(async () => {
+		const contractCollection = collection(db, 'contracts');
+		const snapshot = await getDocs(contractCollection);
+
+		contracts = snapshot.docs.map((doc) => doc.data());
+	});
 </script>
 
 <div class="flex flex-col justify-center items-center gap-6 text-white">
@@ -14,8 +26,12 @@
 	<Button class="hover:bg-neutral-800 transition-colors">or list your own</Button>
 	<div class="flex items-center justify-center w-full">
 		<div class="grid grid-cols-3 gap-4 w-3/4">
-			{#each [1, 2, 3, 4, 5, 6] as i}
-				<ContractThumbnail on:click={() => console.log('Hello!')} />
+			{#each contracts as contract}
+				<ContractThumbnail
+					title={contract.title}
+					endDate={contract.end_date ? new Date(contract.end_date) : null}
+					href={`/contract?id=${contract.id}`}
+				/>
 			{/each}
 		</div>
 	</div>
