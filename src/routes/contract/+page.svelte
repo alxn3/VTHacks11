@@ -5,7 +5,7 @@
 	import type { PageData } from './$types';
 	import { currentAccountStore } from '../../lib/store';
 	import Table from '$lib/Table.svelte';
-	export let post: { title: string, content: string };
+	export let post: { title: string; content: string };
 
 	let showForm = false;
 	let operation: 'buyForShares' | 'sellForShares' | 'buyAgainstShares' | 'sellAgainstShares' | '' =
@@ -104,10 +104,42 @@
 	</div>
 </div>
 
-<Table data={data.against_orderbook.asks}/>
-<Table data={data.against_orderbook.bids}/>
-<Table data={data.for_orderbook.asks}/>
-<Table data={data.for_orderbook.bids}/>
+<div class="space-y-4">
+	<div class="border-[1px] border-neutral-700 rounded-xl bg-neutral-950 text-neutral-200 w-full">
+		<h2 class="p-2 text-center">Against</h2>
+		<table class="table-fixed w-full">
+			<thead>
+				<tr>
+					<th>Ask</th>
+					<th>Bid</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><Table data={data.against_orderbook.asks} /></td>
+					<td><Table data={data.against_orderbook.bids} /></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="border-[1px] border-neutral-700 rounded-xl bg-neutral-950 text-neutral-200 w-full">
+		<h2 class="p-2 text-center">For</h2>
+		<table class="table-fixed w-full">
+			<thead>
+				<tr>
+					<th>Ask</th>
+					<th>Bid</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><Table data={data.for_orderbook.asks} /></td>
+					<td><Table data={data.for_orderbook.bids} /></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
 
 <style>
 	input,
@@ -119,5 +151,9 @@
 	}
 	label {
 		@apply text-white font-light text-xl;
+	}
+
+	h2 {
+		@apply text-xl font-thin;
 	}
 </style>
