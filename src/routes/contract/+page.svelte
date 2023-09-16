@@ -3,7 +3,6 @@
 	import Button from '$lib/Button.svelte';
 	import CandleStickChart from '$lib/CandleStickChart.svelte';
 
-	export let title = 'Lorem ipsum dolor sit amet consectetur adipisicing elit.';
 	import { currentAccountStore } from '../../lib/store';
 
 	export let title = 'Lorem ipsum dolor sit amet consectetur adipisicing elit.';
