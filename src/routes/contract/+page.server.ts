@@ -1,7 +1,5 @@
-import { onMount } from 'svelte';
-import detectEthereumProvider from '@metamask/detect-provider';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase/firebase';
-import { addDoc, collection, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 const updateOrderbook = async (type, operation, dataObject, userUuid) => {
     const fillType = dataObject.get('fillType');
