@@ -79,9 +79,12 @@
 
 		const x = d3
 			.scaleBand<Date>()
-			.domain(d3.timeHour.range(minDate, new Date(maxDate.getTime() + 86400000)))
 			.range([marginLeft, width - marginRight])
-			.padding(0.2);
+			.padding(0.2)
+		
+		if (dur === 'day') x.domain(d3.utcDay.range(minDate, maxDate));
+		else if (dur === 'hour') x.domain(d3.utcHour.range(minDate, maxDate));
+		else if (dur === 'minute') x.domain(d3.utcMinute.range(minDate, maxDate));
 
 		const y = d3
 			.scaleLinear()
@@ -209,7 +212,7 @@
 					on:click={() => {
 						from = new Date(times[time]);
 						// time contains 'hr'
-						if (time.includes('hr')) dur = 'hour';
+						if (time.includes('hr')) dur = 'minute';
 						else if (time === '1 hr') dur = 'minute';
 						else dur = 'day';
 						createChart();
