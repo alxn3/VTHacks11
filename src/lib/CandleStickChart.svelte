@@ -35,11 +35,12 @@
 		let maxValue = -Infinity;
 		const historyData = [
 			...againstData.map((d) => {
+				const date = new Date(d.date.getTime());
 				minValue = Math.min(minValue, d.againstAsk, d.againstBid);
 				maxValue = Math.max(maxValue, d.againstAsk, d.againstBid);
-				if (dur === 'day') d.date.setHours(0, 0, 0, 0);
-				else if (dur === 'hour') d.date.setMinutes(0, 0, 0);
-				else if (dur === 'minute') d.date.setSeconds(0, 0);
+				if (dur === 'day') date.setHours(0, 0, 0, 0);
+				else if (dur === 'hour') date.setMinutes(0, 0, 0);
+				else if (dur === 'minute') date.setSeconds(0, 0);
 				return {
 					date: d.date,
 					forAsk: NaN,
@@ -49,13 +50,14 @@
 				};
 			}),
 			...forData.map((d) => {
+				const date = new Date(d.date.getTime());
 				minValue = Math.min(minValue, d.forAsk, d.forBid);
 				maxValue = Math.max(maxValue, d.forAsk, d.forBid);
-				if (dur === 'day') d.date.setHours(0, 0, 0, 0);
-				else if (dur === 'hour') d.date.setMinutes(0, 0, 0);
-				else if (dur === 'minute') d.date.setSeconds(0, 0);
+				if (dur === 'day') date.setHours(0, 0, 0, 0);
+				else if (dur === 'hour') date.setMinutes(0, 0, 0);
+				else if (dur === 'minute') date.setSeconds(0, 0);
 				return {
-					date: d.date,
+					date: date,
 					forAsk: d.forAsk,
 					forBid: d.forBid,
 					againstAsk: NaN,
@@ -191,6 +193,7 @@
 		'1 m': Date.now() - 30 * 24 * 60 * 60 * 1000,
 		'24 hr': Date.now() - 24 * 60 * 60 * 1000,
 		'12 hr': Date.now() - 12 * 60 * 60 * 1000,
+		'6 hr': Date.now() - 6 * 60 * 60 * 1000,
 		'1 hr': Date.now() - 60 * 60 * 1000
 	};
 </script>

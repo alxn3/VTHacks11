@@ -10,6 +10,7 @@
 	import { db } from '../../services/firebase/firebase';
 	import type { PageData } from './$types';
 	import { accountData } from '$lib/accountUtils';
+	import { active } from 'd3';
 
 	export let post: { title: string; content: string };
 
@@ -50,7 +51,7 @@
 	export let data: PageData;
 
 	const believe = (() => {
-		const book = data.for_orderbook;
+		const book = data.contract.for_orderbook;
 		let ask = book.asks && book.asks.length !== 0 ? book.asks[book.asks.length - 1].price : -1;
 		let bid = book.bids && book.bids.length !== 0 ? book.bids[book.bids.length - 1].price : -1;
 		ask = ask === -1 ? bid : ask;
@@ -59,7 +60,7 @@
 		return (ask + bid) / 2;
 	})();
 	const cope = (() => {
-		const book = data.against_orderbook;
+		const book = data.contract.against_orderbook;
 		let ask = book.asks && book.asks.length !== 0 ? book.asks[book.asks.length - 1].price : -1;
 		let bid = book.bids && book.bids.length !== 0 ? book.bids[book.bids.length - 1].price : -1;
 		ask = ask === -1 ? bid : ask;
@@ -72,7 +73,7 @@
 <div class="flex flex-col gap-8 text-xl font-light w-full">
 	<div class="flex justify-between">
 		<div class="space-y-2">
-			<h1 class="">{data.title}</h1>
+			<h1 class="">{data.contract.title}</h1>
 			<BelieveCope {believe} {cope} />
 		</div>
 		<div class="w-10" />
@@ -82,6 +83,7 @@
 				{(() => {
 					let sum = 0;
 					accountData.subscribe((value) => {
+						if (!value.active_contracts) return;
 						for (const contract of value.active_contracts) {
 							console.log(contract);
 							if (contract.uuid === contractId) {
@@ -100,13 +102,13 @@
 	</div>
 	<div class="w-full h-screen">
 		<CandleStickChart
-			againstData={data.against_historicalPrices.history.map((d) => ({
-				date: new Date(d.date.seconds * 1000),
+			againstData={data.contract.against_historicalPrices.history.map((d) => ({
+				date: new Date(d.date.seconds * 1000 + d.date.nanoseconds / 1000000),
 				againstAsk: d.against_price,
 				againstBid: d.for_price
 			}))}
-			forData={data.for_historicalPrices.history.map((d) => ({
-				date: new Date(d.date.seconds * 1000),
+			forData={data.contract.for_historicalPrices.history.map((d) => ({
+				date: new Date(d.date.seconds * 1000 + d.date.nanoseconds / 1000000),
 				forAsk: d.against_price,
 				forBid: d.for_price
 			}))}
@@ -123,6 +125,8 @@
 				{(() => {
 					let sum = 0;
 					accountData.subscribe((value) => {
+						console.log(value);
+						if (!value.active_contracts) return;
 						for (const contract of value.active_contracts) {
 							console.log(contract);
 							if (contract.uuid === contractId && contract.type === 'for') {
@@ -142,7 +146,7 @@
 			<p class="text-right">
 				{(() => {
 					let sum = 0;
-					data.for_orderbook.asks?.forEach((d) => {
+					data.contract.for_orderbook.asks?.forEach((d) => {
 						sum += d.amount;
 					});
 					return sum;
@@ -153,6 +157,7 @@
 				{(() => {
 					let sum = 0;
 					accountData.subscribe((value) => {
+						if (!value.active_contracts) return;
 						for (const contract of value.active_contracts) {
 							console.log(contract);
 							if (contract.uuid === contractId && contract.type === 'against') {
@@ -173,7 +178,7 @@
 			<p class="text-right">
 				{(() => {
 					let sum = 0;
-					data.against_orderbook.asks?.forEach((d) => {
+					data.contract.against_orderbook.asks?.forEach((d) => {
 						sum += d.amount;
 					});
 					return sum;
@@ -241,7 +246,7 @@
 	<div>
 		<h1>Background & Due Diligence</h1>
 		<div class="my-2 p-2 bg-black rounded-xl text-neutral-300 font-thin">
-			{@html data.description}
+			{@html data.contract.description}
 		</div>
 	</div>
 </div>
@@ -252,11 +257,11 @@
 		<div class="flex w-full flex-wrap gap-2">
 			<div class="w-full">
 				<h3>Asks</h3>
-				<Table data={data.against_orderbook.asks} />
+				<Table data={data.contract.against_orderbook.asks} />
 			</div>
 			<div class="w-full">
 				<h3>Bids</h3>
-				<Table data={data.against_orderbook.bids} />
+				<Table data={data.contract.against_orderbook.bids} />
 			</div>
 		</div>
 	</div>
@@ -265,11 +270,11 @@
 		<div class="flex w-full flex-wrap gap-2">
 			<div class="w-full">
 				<h3>Asks</h3>
-				<Table data={data.for_orderbook.asks} />
+				<Table data={data.contract.for_orderbook.asks} />
 			</div>
 			<div class="w-full">
 				<h3>Bids</h3>
-				<Table data={data.for_orderbook.bids} />
+				<Table data={data.contract.for_orderbook.bids} />
 			</div>
 		</div>
 	</div>
