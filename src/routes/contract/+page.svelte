@@ -9,6 +9,7 @@
 	import { currentAccountStore } from '../../lib/store';
 	import { db } from '../../services/firebase/firebase';
 	import type { PageData } from './$types';
+	import { accountData } from '$lib/accountUtils';
 
 	export let post: { title: string; content: string };
 
@@ -119,9 +120,12 @@
 			<p class="text-green-500">
 				{(() => {
 					let sum = 0;
-					data.for_orderbook.asks?.forEach((d) => {
-						if (d.user === currentUuid) {
-							sum += d.amount;
+					accountData.subscribe((value) => {
+						for (const contract of value.active_contracts) {
+							console.log(contract);
+							if (contract.uuid === contractId) {
+								sum += contract.amount;
+							}
 						}
 					});
 					return sum;

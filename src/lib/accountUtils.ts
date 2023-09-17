@@ -104,6 +104,16 @@ export const updateUserData = async () => {
 			if (!querySnapshot.empty) {
 				// User with currentAccount exists
 				console.log('User exists. Document data:', querySnapshot.docs[0].data());
+				accountData.set(
+					{
+						uuid: 'currentAccount',
+						trade_history: [],
+						tokens: 0,
+						created_contracts: [],
+						active_contracts: [],
+						joined: new Date()
+					}
+				)
 				accountData.set(querySnapshot.docs[0].data());
 			} else {
 				// No user with currentAccount found, create a new user
@@ -122,7 +132,7 @@ export const connectMeta = async () => {
 			provider
 				.request({ method: 'eth_requestAccounts' })
 				.then((/** @type {string[]} */ accounts) => {
-					currentAccount = accounts[0];
+					let currentAccount = accounts[0];
 					currentAccountStore.set(currentAccount);
 					console.log(currentAccount);
 
@@ -133,6 +143,16 @@ export const connectMeta = async () => {
 							if (!querySnapshot.empty) {
 								// User with currentAccount exists
 								console.log('User exists. Document data:', querySnapshot.docs[0].data());
+								accountData.set(
+									{
+										uuid: currentAccount,
+										trade_history: [],
+										tokens: 0,
+										created_contracts: [],
+										active_contracts: [],
+										joined: new Date()
+									}
+								)
 								accountData.set(querySnapshot.docs[0].data());
 							} else {
 								// No user with currentAccount found, create a new user
@@ -144,7 +164,10 @@ export const connectMeta = async () => {
 							loggedIn.set(true);
 							window.sessionStorage.setItem('loggedIn', 'true');
 							window.sessionStorage.setItem('currentAccount', currentAccount);
-							window.sessionStorage.setItem('accountData', JSON.stringify(accountData));
+							accountData.subscribe((data) => {
+								window.sessionStorage.setItem('accountData', JSON.stringify(data));
+							});
+							window.location.reload();
 						})
 						.catch((error) => {
 							console.log('Error getting document:', error);

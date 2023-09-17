@@ -88,7 +88,7 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 				amtFilled += order.amount;
 			}
 			const nettokens = amtFilled * order.price * (operation === 'buy' ? -1 : 1);
-			if (order.user != '') {
+			if (order.user != '' && order.user != undefined && order.user != null && order.user != userUuid) {
 				const userDoc = doc(db, 'users', order.user);
 				const userDocData = await getDoc(userDoc);
 				if (!userDocData.exists()) {
@@ -103,6 +103,7 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 				if (operation === 'buy') {
 					// update trade history and current contracts of user who owned the order
 					const userCurrentContract = userCurrentContracts[userCurrentContractIndex];
+                    
 					userCurrentContract.amount -= amtFilled;
 					userCurrentContracts[userCurrentContractIndex] = userCurrentContract;
 					userTradeHistory.push({
@@ -239,7 +240,6 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 	});
 
 	
-	console.log('res', res, path, aorb);
 };
 
 export const actions = {
