@@ -165,6 +165,12 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 			curUserNetTokens += nettokens;
 			i++;
 		}
+            // update the contract's orderbook
+        const res = await updateDoc(specificContractDoc, {
+            [path]: {
+                [aorb]: orderbook
+            }
+        });
 		if (filled < amount) {
 			// add the rest to the orderbook
 			if (type === 'for') {
@@ -180,6 +186,11 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 				user: userUuid,
 				walletId: walletId
 			});
+            const res = await updateDoc(specificContractDoc, {
+                [path]: {
+                    [aorb]: orderbook
+                }
+            });
 		}
 	} else if (fillType === 'limit') {
 		// if limit order, then add the order to the orderbook
@@ -225,14 +236,7 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 		tokens: userDocData.data().tokens + curUserNetTokens
 	});
 
-	console.log('orderbook', orderbook);
-
-	// update the contract's orderbook
-	const res = await updateDoc(specificContractDoc, {
-		[path]: {
-			[aorb]: orderbook
-		}
-	});
+	
 	console.log('res', res, path, aorb);
 };
 
