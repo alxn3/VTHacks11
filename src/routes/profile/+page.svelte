@@ -14,9 +14,9 @@
 	<Table
 		data={[
 			{ key: 'UUID', value: data.uuid },
-			{ key: 'Created Contracts', value: data.created_contracts.length },
-			{ key: 'Active Contracts', value: data.active_contracts.length },
-			{ key: 'Trade History', value: data.trade_history.length }
+			{ key: 'Created Contracts', value: data.created_contracts?.length },
+			{ key: 'Active Contracts', value: data.active_contracts?.length },
+			{ key: 'Trade History', value: data.trade_history?.length }
 		]}
 	/>
 </div>
@@ -24,7 +24,7 @@
 	<div>
 		<h1>Active Contracts</h1>
 		<Table
-			data={data.active_contracts.map((h) => {
+			data={data.active_contracts?.map((h) => {
 				if (h.date) h.date = new Date(h.date.seconds).toUTCString();
 				return h;
 			})}
@@ -33,7 +33,7 @@
 	<div>
 		<h1>Created Contracts</h1>
 		<Table
-			data={data.created_contracts.map((h) => {
+			data={data.created_contracts?.map((h) => {
 				h.date = new Date(h.date.seconds).toUTCString();
 				return h;
 			})}
@@ -42,7 +42,7 @@
 	<div>
 		<h1>History</h1>
 		<Table
-			data={data.trade_history.map((h) => {
+			data={data.trade_history?.map((h) => {
 				h.date = new Date(h.date.seconds).toUTCString();
 				return h;
 			})}

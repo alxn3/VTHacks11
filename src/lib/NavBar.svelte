@@ -80,7 +80,7 @@
 							getFlowBalance();
 						}}>tokens: {$accountData.tokens}</button
 					>
-					<a href="/profile">
+					<a href={`/profile?uuid=${get(accountData).uuid}`}>
 						<button
 							class="mx-4 text-lg bg-black p-2 rounded-xl border-2 border-opacity-0 hover:border-opacity-100 transition-all border-gray-700"
 							>My Profile</button

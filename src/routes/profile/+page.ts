@@ -1,6 +1,8 @@
 import type { PageLoad } from './$types';
 import { db } from '../../services/firebase/firebase';
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc, getDocs, query, collection, where } from 'firebase/firestore';
+import { get } from 'svelte/store';
+import { currentAccountStore } from '$lib/store';
 
 export const load: PageLoad = async ({ url }) => {
 	const id = url.searchParams.get('uuid');
@@ -10,7 +12,9 @@ export const load: PageLoad = async ({ url }) => {
 
 	try {
 		console.log(id);
-		const contractSnapshot = await getDoc(doc(db, 'users', id));
+		const contractSnapshot = (
+			await getDocs(query(collection(db, 'users'), where('uuid', '==', id)))
+		).docs[0];
 		console.log(contractSnapshot.data());
 		if (contractSnapshot.exists()) {
 			const data = contractSnapshot.data();
