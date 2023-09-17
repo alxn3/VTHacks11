@@ -126,7 +126,9 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 						userCurrentContracts.push({
 							uuid: contractId,
 							amount: amtFilled,
-							walletId: walletId
+							walletId: walletId,
+                            type: type,
+                            price: order.price
 						});
 					} else {
 						const userCurrentContract = userCurrentContracts[userCurrentContractIndex];
@@ -154,7 +156,8 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 					uuid: contractId,
 					walletId: walletId,
 					amount: amtFilled,
-					type: type
+					type: type,
+                    price: order.price
 				});
 			} else {
 				console.log('soldContracts', soldContracts)
@@ -162,7 +165,8 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 					uuid: contractId,
 					walletId: walletId,
 					amount: amtFilled,
-					type: type
+					type: type,
+                    price: order.price
 				});
 			}
 			curUserNetTokens += nettokens;

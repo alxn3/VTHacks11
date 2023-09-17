@@ -81,14 +81,16 @@
 			<p class="text-green-500">
 				{(() => {
 					let sum = 0;
-					data.for_orderbook.asks?.forEach((d) => {
-						if (d.user === currentUuid) {
-							sum += (believe - d.price) * d.amount;
-						}
-					});
-					data.against_orderbook.asks?.forEach((d) => {
-						if (d.user === currentUuid) {
-							sum += (cope - d.price) * d.amount;
+					accountData.subscribe((value) => {
+						for (const contract of value.active_contracts) {
+							console.log(contract);
+							if (contract.uuid === contractId) {
+								if (contract.type === 'for') {
+									sum += contract.amount * (believe - contract.price);
+								} else {
+									sum += contract.amount * (cope - contract.price);
+								}
+							}
 						}
 					});
 					return sum > 0 ? '+' + sum.toFixed(2) : sum.toFixed(2);
