@@ -123,7 +123,7 @@
 					accountData.subscribe((value) => {
 						for (const contract of value.active_contracts) {
 							console.log(contract);
-							if (contract.uuid === contractId) {
+							if (contract.uuid === contractId && contract.type === 'for') {
 								sum += contract.amount;
 							}
 						}
@@ -150,9 +150,12 @@
 			<p class="text-red-500">
 				{(() => {
 					let sum = 0;
-					data.against_orderbook.asks?.forEach((d) => {
-						if (d.user === currentUuid) {
-							sum += d.amount;
+					accountData.subscribe((value) => {
+						for (const contract of value.active_contracts) {
+							console.log(contract);
+							if (contract.uuid === contractId && contract.type === 'against') {
+								sum += contract.amount;
+							}
 						}
 					});
 					return sum;
