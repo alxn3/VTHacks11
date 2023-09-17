@@ -47,41 +47,52 @@
 	});
 
 	export let data: PageData;
+
+	const believe = (() => {
+		const book = data.for_orderbook;
+		let ask = book.asks && book.asks.length !== 0 ? book.asks[book.asks.length - 1].price : -1;
+		let bid = book.bids && book.bids.length !== 0 ? book.bids[book.bids.length - 1].price : -1;
+		ask = ask === -1 ? bid : ask;
+		bid = bid === -1 ? ask : bid;
+		console.log(ask, bid);
+		return (ask + bid) / 2;
+	})();
+	const cope = (() => {
+		const book = data.against_orderbook;
+		let ask = book.asks && book.asks.length !== 0 ? book.asks[book.asks.length - 1].price : -1;
+		let bid = book.bids && book.bids.length !== 0 ? book.bids[book.bids.length - 1].price : -1;
+		ask = ask === -1 ? bid : ask;
+		bid = bid === -1 ? ask : bid;
+		console.log(ask, bid);
+		return (ask + bid) / 2;
+	})();
 </script>
 
 <div class="flex flex-col gap-8 text-xl font-light w-full">
 	<div class="flex justify-between">
 		<div class="space-y-2">
 			<h1 class="">{data.title}</h1>
-			<BelieveCope
-				believe={(() => {
-					const book = data.for_orderbook;
-					let ask =
-						book.asks && book.asks.length !== 0 ? book.asks[book.asks.length - 1].price : -1;
-					let bid =
-						book.bids && book.bids.length !== 0 ? book.bids[book.bids.length - 1].price : -1;
-					ask = ask === -1 ? bid : ask;
-					bid = bid === -1 ? ask : bid;
-					console.log(ask, bid);
-					return (ask + bid) / 2;
-				})()}
-				cope={(() => {
-					const book = data.against_orderbook;
-					let ask =
-						book.asks && book.asks.length !== 0 ? book.asks[book.asks.length - 1].price : -1;
-					let bid =
-						book.bids && book.bids.length !== 0 ? book.bids[book.bids.length - 1].price : -1;
-					ask = ask === -1 ? bid : ask;
-					bid = bid === -1 ? ask : bid;
-					console.log(ask, bid);
-					return (ask + bid) / 2;
-				})()}
-			/>
+			<BelieveCope {believe} {cope} />
 		</div>
 		<div class="w-10" />
 		<div class="text-right">
 			<h1 class="whitespace-nowrap">Your current profit:</h1>
-			<p class="text-green-500">+93.80 tokens</p>
+			<p class="text-green-500">
+				{(() => {
+					let sum = 0;
+					data.for_orderbook.asks?.forEach((d) => {
+						if (d.user === currentUuid) {
+							sum += (believe - d.price) * d.amount;
+						}
+					});
+					data.against_orderbook.asks?.forEach((d) => {
+						if (d.user === currentUuid) {
+							sum += (cope - d.price) * d.amount;
+						}
+					});
+					return sum > 0 ? '+' + sum.toFixed(2) : sum.toFixed(2);
+				})()} tokens
+			</p>
 		</div>
 	</div>
 	<div class="w-full h-screen">
