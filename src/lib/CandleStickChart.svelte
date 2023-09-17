@@ -7,29 +7,64 @@
 
 	let from = new Date(0);
 
-	export let historyData: {
+	export let againstData: {
 		date: Date;
-		open: number;
-		high: number;
-		low: number;
-		close: number;
-	}[] = Array.from({ length: 100 }, () => ({
-		date: new Date(2018, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28)),
-		open: Math.random() * 100,
-		high: Math.random() * 100,
-		low: Math.random() * 100,
-		close: Math.random() * 100
-	})).sort((a, b) => a.date.getTime() - b.date.getTime());
+		againstAsk: number;
+		againstBid: number;
+	}[];
+
+	export let forData: {
+		date: Date;
+		forBid: number;
+		forAsk: number;
+	}[];
+
+	let dur: 'day' | 'hour' | 'minute' = 'day';
 
 	const createChart = () => {
 		d3.select(el).select('svg').remove();
 
 		const width = el.clientWidth;
 		const height = el.clientHeight;
-		const marginTop = 20;
+		const marginTop = 40;
 		const marginRight = 30;
 		const marginBottom = 30;
 		const marginLeft = 40;
+
+		let minValue = Infinity;
+		let maxValue = -Infinity;
+		const historyData = [
+			...againstData.map((d) => {
+				minValue = Math.min(minValue, d.againstAsk, d.againstBid);
+				maxValue = Math.max(maxValue, d.againstAsk, d.againstBid);
+				if (dur === 'day') d.date.setHours(0, 0, 0, 0);
+				else if (dur === 'hour') d.date.setMinutes(0, 0, 0);
+				else if (dur === 'minute') d.date.setSeconds(0, 0);
+				return {
+					date: d.date,
+					forAsk: NaN,
+					forBid: NaN,
+					againstAsk: d.againstAsk,
+					againstBid: d.againstBid
+				};
+			}),
+			...forData.map((d) => {
+				minValue = Math.min(minValue, d.forAsk, d.forBid);
+				maxValue = Math.max(maxValue, d.forAsk, d.forBid);
+				if (dur === 'day') d.date.setHours(0, 0, 0, 0);
+				else if (dur === 'hour') d.date.setMinutes(0, 0, 0);
+				else if (dur === 'minute') d.date.setSeconds(0, 0);
+				return {
+					date: d.date,
+					forAsk: d.forAsk,
+					forBid: d.forBid,
+					againstAsk: NaN,
+					againstBid: NaN
+				};
+			})
+		];
+
+		console.log(historyData);
 
 		const data = historyData.filter((d) => d.date.getTime() > from.getTime());
 
@@ -38,15 +73,17 @@
 
 		if (!minDate || !maxDate) return;
 
+		var color = d3.scaleOrdinal().domain(Object.keys(data[0])).range(d3.schemeSet1);
+
 		const x = d3
 			.scaleBand<Date>()
-			.domain(d3.timeDay.range(minDate, new Date(maxDate.getTime() + 86400000)))
+			.domain(d3.timeHour.range(minDate, new Date(maxDate.getTime() + 86400000)))
 			.range([marginLeft, width - marginRight])
 			.padding(0.2);
 
 		const y = d3
-			.scaleLog()
-			.domain([d3.min(data, (d) => d.low), d3.max(data, (d) => d.high)] as [number, number])
+			.scaleLinear()
+			.domain([minValue, maxValue])
 			.rangeRound([height - marginBottom, marginTop]);
 
 		// Create the SVG container.
@@ -59,7 +96,7 @@
 			.call(
 				d3
 					.axisBottom(x)
-					.tickValues(d3.timeMonday.every(width > 720 ? 1 : 2)!.range(minDate, maxDate))
+					.tickValues(d3.timeDay.every(width > 720 ? 1 : 2)!.range(minDate, maxDate))
 					.tickFormat(d3.utcFormat('%-m/%-d'))
 			)
 			.call((g) => g.select('.domain').remove());
@@ -82,29 +119,11 @@
 			)
 			.call((g) => g.select('.domain').remove());
 
-		// Create a group for each day of data, and append two lines to it.
-		const g = svg
-			.append('g')
-			// .attr('stroke-linecap')
-			.attr('stroke', 'white')
-			.selectAll('g')
-			.data(data)
-			.join('g')
-			.attr('transform', (d) => {
-				return `translate(${x(d.date)},0)`;
-			});
-
-		g.append('line')
-			.attr('y1', (d) => y(d.low))
-			.attr('y2', (d) => y(d.high));
-
-		g.append('line')
-			.attr('y1', (d) => y(d.open))
-			.attr('y2', (d) => y(d.close))
-			.attr('stroke-width', x.bandwidth())
-			.attr('stroke', (d) =>
-				d.open > d.close ? d3.schemeSet1[0] : d.close > d.open ? d3.schemeSet1[2] : d3.schemeSet1[8]
-			);
+		const line = d3
+			.line<{ date: Date; value: number }>()
+			.defined((d) => !isNaN(d.value))
+			.x((d) => x(d.date)!)
+			.y((d) => y(d.value));
 
 		// Append a title (tooltip).
 		const formatDate = d3.utcFormat('%B %-d, %Y');
@@ -114,13 +133,50 @@
 				f((y1 - y0) / y0)
 		)(d3.format('+.2%'));
 
-		g.append('title').text(
-			(d) => `${formatDate(d.date)}
-                    Open: ${formatValue(d.open)}
-                    Close: ${formatValue(d.close)} (${formatChange(d.open, d.close)})
-                    Low: ${formatValue(d.low)}
-                    High: ${formatValue(d.high)}`
-		);
+		const space = [0, 70, 140, 240];
+
+		for (const key of Object.keys(data[0])) {
+			if (key === 'date') continue;
+			svg
+				.append('path')
+				.attr('fill', 'none')
+				.attr('stroke', color(key))
+				.attr('stroke-width', 1.5)
+				.attr(
+					'd',
+					line(data.filter((d) => !isNaN(d[key])).map((d) => ({ date: d.date, value: d[key] })))
+				)
+				.attr('title', key);
+		}
+		svg
+			.selectAll('mydots')
+			.data(Object.keys(data[0]).filter((d) => d !== 'date'))
+			.enter()
+			.append('circle')
+			.attr('cx', (d, i) => marginLeft / 2 + space[i])
+			.attr('cy', marginTop / 2)
+			.attr('r', 4)
+			.style('fill', function (d) {
+				return color(d);
+			});
+
+		// Add one dot in the legend for each name.
+		svg
+			.selectAll('mylabels')
+			.data(Object.keys(data[0]).filter((d) => d !== 'date'))
+			.enter()
+			.append('text')
+			.attr('x', (d, i) => marginLeft / 2 + space[i] + 10)
+			.attr('y', marginTop / 2) // 100 is where the first dot appears. 25 is the distance between dots
+			.style('fill', function (d) {
+				return color(d);
+			})
+			.text(function (d) {
+				return d;
+			})
+			.attr('text-anchor', 'left')
+			.style('alignment-baseline', 'middle')
+			.style('font-size', '12px');
 	};
 
 	onMount(() => {
@@ -135,7 +191,7 @@
 		'1 m': Date.now() - 30 * 24 * 60 * 60 * 1000,
 		'24 hr': Date.now() - 24 * 60 * 60 * 1000,
 		'12 hr': Date.now() - 12 * 60 * 60 * 1000,
-		'1 fr': Date.now() - 60 * 60 * 1000
+		'1 hr': Date.now() - 60 * 60 * 1000
 	};
 </script>
 
@@ -149,6 +205,10 @@
 					class="text-sm py-1 px-2 text-green-500"
 					on:click={() => {
 						from = new Date(times[time]);
+						// time contains 'hr'
+						if (time.includes('hr')) dur = 'hour';
+						else if (time === '1 hr') dur = 'minute';
+						else dur = 'day';
 						createChart();
 					}}
 				>

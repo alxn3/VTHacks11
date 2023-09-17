@@ -1,18 +1,12 @@
-import { onMount } from 'svelte';
-import detectEthereumProvider from '@metamask/detect-provider';
+import { addDoc, collection, updateDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase/firebase';
-import { addDoc, collection, updateDoc, getDocs} from 'firebase/firestore';
-import { contractUUIDs } from './contractStore.svelte'; 
-import { doc, setDoc } from 'firebase/firestore';
+import { contractUUIDs } from './contractStore.svelte';
 export const actions = {
 	default: async ({ cookies, request }) => {
 		const formDataEntries = await request.formData();
-		let dataObject: Record<string, any> = {};
+		const dataObject: Record<string, any> = {};
 
-		let contractCollection = collection(db, 'contracts');
-
-		const newContractRef = doc(contractCollection);  // Create a new document reference with an auto-generated ID
-		
+		const contractCollection = collection(db, 'contracts');		
 
 		for (let entry of formDataEntries.entries()) {
 			const [key, value] = entry;
@@ -33,15 +27,13 @@ export const actions = {
 		const defaultHistoricalPrices = {
 			history: [
 				{
-					date: new Date().toJSON().slice(0,10).replace(/-/g,'/'),
+					date: new Date(),
 					for_price: parseFloat(dataObject['starting-price']),
 					against_price: parseFloat(dataObject['starting-price'])
 				}
 			]
 		}
 
-
-		var utc = new Date().toJSON().slice(0,10).replace(/-/g,'/');
 
 		await addDoc(contractCollection, {  
 			title: dataObject['title'],
@@ -50,7 +42,7 @@ export const actions = {
 			volume: parseInt(dataObject['volume']),
 			for_orderbook: defaultForOrderbook, 
 			against_orderbook: defaultForOrderbook, 
-			start_date: utc, 
+			start_date: new Date(), 
 			end_date: "", 
 			for_historicalPrices: defaultHistoricalPrices,
 			against_historicalPrices: defaultHistoricalPrices

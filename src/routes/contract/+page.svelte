@@ -2,23 +2,19 @@
 	import BelieveCope from '$lib/BelieveCope.svelte';
 	import Button from '$lib/Button.svelte';
 	import CandleStickChart from '$lib/CandleStickChart.svelte';
-	import type { PageData } from './$types';
-	import { currentAccountStore } from '../../lib/store';
 	import Table from '$lib/Table.svelte';
-	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
-	import { db } from '../../services/firebase/firebase';
 	import {
-		addDoc,
 		collection,
-		doc,
-		getDoc,
 		getDocs,
 		query,
-		updateDoc,
 		where
 	} from 'firebase/firestore';
-	import { bin } from 'd3';
+	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
+	import { currentAccountStore } from '../../lib/store';
+	import { db } from '../../services/firebase/firebase';
+	import type { PageData } from './$types';
+
 	export let post: { title: string; content: string };
 
 	let showForm = false;
@@ -71,7 +67,18 @@
 		</div>
 	</div>
 	<div class="w-full h-screen">
-		<CandleStickChart />
+		<CandleStickChart
+			againstData={data.against_historicalPrices.history.map((d) => ({
+				date: new Date(d.date.seconds * 1000),
+				againstAsk: d.against_price,
+				againstBid: d.for_price
+			}))}
+			forData={data.for_historicalPrices.history.map((d) => ({
+				date: new Date(d.date.seconds * 1000),
+				forAsk: d.against_price,
+				forBid: d.for_price
+			}))}
+		/>
 	</div>
 	<div class="space-y-1">
 		<div class="flex justify-between">

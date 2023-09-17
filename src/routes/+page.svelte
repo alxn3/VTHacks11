@@ -4,6 +4,7 @@
 	import { getDocs, collection } from 'firebase/firestore';
 	import Button from '$lib/Button.svelte';
 	import ContractThumbnail from '$lib/ContractThumbnail.svelte';
+	import { goto } from '$app/navigation';
 
 	let contracts = [];
 
@@ -23,7 +24,7 @@
 		class="w-4/5 h-12 rounded-md border-2 border-neutral-700 bg-black p-2"
 		placeholder="Search for contracts"
 	/>
-	<Button class="hover:bg-neutral-800 transition-colors">or list your own</Button>
+	<Button class="hover:bg-neutral-800 transition-colors" on:click={() => goto("/create-contract")}>or list your own</Button>
 	<div class="flex items-center justify-center w-full">
 		<div class="grid grid-cols-3 gap-4 w-3/4">
 			{#each contracts as contract}
