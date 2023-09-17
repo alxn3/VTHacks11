@@ -82,19 +82,16 @@
 			<p class="text-green-500">
 				{(() => {
 					let sum = 0;
-					accountData.subscribe((value) => {
-						if (!value.active_contracts) return;
-						for (const contract of value.active_contracts) {
-							console.log(contract);
-							if (contract.uuid === contractId) {
-								if (contract.type === 'for') {
-									sum += contract.amount * (believe - contract.price);
-								} else {
-									sum += contract.amount * (cope - contract.price);
-								}
+					for (const contract of data.user.active_contracts) {
+						console.log(contract);
+						if (contract.uuid === contractId) {
+							if (contract.type === 'for') {
+								sum += contract.amount * (believe - contract.price);
+							} else {
+								sum += contract.amount * (cope - contract.price);
 							}
 						}
-					});
+					}
 					return sum > 0 ? '+' + sum.toFixed(2) : sum.toFixed(2);
 				})()} tokens
 			</p>
@@ -124,16 +121,12 @@
 			<p class="text-green-500">
 				{(() => {
 					let sum = 0;
-					accountData.subscribe((value) => {
-						console.log(value);
-						if (!value.active_contracts) return;
-						for (const contract of value.active_contracts) {
-							console.log(contract);
-							if (contract.uuid === contractId && contract.type === 'for') {
-								sum += contract.amount;
-							}
+					for (const contract of data.user.active_contracts) {
+						console.log(contract);
+						if (contract.uuid === contractId && contract.type === 'for') {
+							sum += contract.amount;
 						}
-					});
+					}
 					return sum;
 				})()} Shares
 			</p>
@@ -156,15 +149,12 @@
 			<p class="text-red-500">
 				{(() => {
 					let sum = 0;
-					accountData.subscribe((value) => {
-						if (!value.active_contracts) return;
-						for (const contract of value.active_contracts) {
-							console.log(contract);
-							if (contract.uuid === contractId && contract.type === 'against') {
-								sum += contract.amount;
-							}
+					for (const contract of data.user.active_contracts) {
+						console.log(contract);
+						if (contract.uuid === contractId && contract.type === 'against') {
+							sum += contract.amount;
 						}
-					});
+					}
 					return sum;
 				})()} Shares
 			</p>
