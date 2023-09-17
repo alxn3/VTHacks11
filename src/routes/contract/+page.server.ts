@@ -29,7 +29,7 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 	if (operation === 'sell') {
 		// check if the user has enough contracts to sell
 		const userCurrentContractIndex = userCurrentContracts.findIndex(
-			(contract) => contract.uuid === contractId
+			(contract) => contract.uuid === contractId && contract.type === type
 		);
 		if (userCurrentContractIndex === -1) {
 			console.error('User does not have enough contracts');
@@ -98,7 +98,7 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 				const userTradeHistory = userDocData.data().trade_history;
 				let userCurrentContracts = userDocData.data().active_contracts;
 				const userCurrentContractIndex = userCurrentContracts.findIndex(
-					(contract) => contract.uuid === contractId
+					(contract) => contract.uuid === contractId && contract.type === type
 				);
 				if (operation === 'buy') {
 					// update trade history and current contracts of user who owned the order
@@ -160,7 +160,7 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
                     price: order.price
 				});
 			} else {
-				console.log('soldContracts', soldContracts)
+				// console.log('soldContracts', soldContracts)
 				soldContracts.push({
 					uuid: contractId,
 					walletId: walletId,
@@ -227,7 +227,7 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 		userCurrentContracts = userCurrentContracts.concat(newContracts);
 	} else {
 		const userCurrentContractIndex = userCurrentContracts.findIndex(
-			(contract) => contract.uuid === contractId
+			(contract) => contract.uuid === contractId && contract.type === type
 		);
 		const userCurrentContract = userCurrentContracts[userCurrentContractIndex];
 		userCurrentContract.amount -= amount;
@@ -251,7 +251,7 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
         against_price: type === 'for' ? price : orderbookDoc.data()['against_historicalPrices']['history'][orderbookDoc.data()['against_historicalPrices']['history'].length - 1]['against_price'],
         for_price: type === 'for' ? orderbookDoc.data()['for_historicalPrices']['history'][orderbookDoc.data()['for_historicalPrices']['history'].length - 1]['for_price'] : price
     });
-    console.log('historicalPrices', historicalPrices);
+    // console.log('historicalPrices', historicalPrices);
     await updateDoc(specificContractDoc, {
         [path]: {
             history: historicalPrices
