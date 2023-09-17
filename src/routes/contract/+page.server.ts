@@ -239,6 +239,21 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 		tokens: userDocData.data().tokens + curUserNetTokens
 	});
 
+    // update the contract's orderbook history
+    path = type === 'for' ? 'for_historicalPrices' : 'against_historicalPrices';
+    const historicalPrices = orderbookDoc.data()[path]['history'];
+    historicalPrices.push({
+        date: new Date(),
+        against_price: type === 'for' ? price : orderbookDoc.data()['against_historicalPrices']['history'][orderbookDoc.data()['against_historicalPrices']['history'].length - 1]['against_price'],
+        for_price: type === 'for' ? orderbookDoc.data()['for_historicalPrices']['history'][orderbookDoc.data()['for_historicalPrices']['history'].length - 1]['for_price'] : price
+    });
+    console.log('historicalPrices', historicalPrices);
+    await updateDoc(specificContractDoc, {
+        [path]: {
+            history: historicalPrices
+        }
+    });
+
 	
 };
 
