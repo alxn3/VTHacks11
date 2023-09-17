@@ -163,3 +163,17 @@ export const connectMeta = async () => {
 		}
 	});
 };
+
+export const getUserData = async (uuid: string) => {
+	const userRef = doc(db, 'users', uuid);
+	const userSnap = await getDoc(userRef);
+
+	if (userSnap.exists()) {
+		console.log('Document data:', userSnap.data());
+		return userSnap.data();
+	} else {
+		// doc.data() will be undefined in this case
+		console.log('No such document!');
+		return null;
+	}
+}

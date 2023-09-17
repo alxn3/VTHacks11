@@ -16,10 +16,10 @@
 {#if data.length === 0}
 	<p class="p-2 text-center">No data</p>
 {:else}
-	<table class="table-fixed border-2 border-neutral-700 rounded-2xl overflow-hidden w-full">
+	<table class="table-auto border-2 border-neutral-700 rounded-xl overflow-hidden w-full">
 		<thead>
 			<tr>
-				{#each Object.keys(data[0]) as key}
+				{#each Object.keys(data[0]).sort() as key}
 					<th>{key}</th>
 				{/each}
 			</tr>
@@ -27,8 +27,8 @@
 		<tbody>
 			{#each data as row}
 				<tr>
-					{#each Object.values(row) as value}
-						<td>{value}</td>
+					{#each Object.keys(row).sort() as value}
+						<td>{row[value]}</td>
 					{/each}
 				</tr>
 			{/each}
@@ -39,7 +39,7 @@
 <style>
 	th,
 	td {
-		@apply border-[1px] border-neutral-700 px-2 py-1;
+		@apply border-[1px] border-neutral-700 px-2 py-1 overflow-x-auto min-w-[4rem];
 	}
 
 	td {

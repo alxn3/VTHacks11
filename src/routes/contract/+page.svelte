@@ -18,6 +18,7 @@
 		updateDoc,
 		where
 	} from 'firebase/firestore';
+	import { bin } from 'd3';
 	export let post: { title: string; content: string };
 
 	let showForm = false;
@@ -31,8 +32,12 @@
 		showForm = true;
 	}
 
-	let currentUuid;
+	let currentUuid: string | null;
 	let contractId: string | null;
+	let walletId = get(currentAccountStore);
+	currentAccountStore.subscribe((value) => {
+		walletId = value;
+	});
 	onMount(() => {
 		const url = new URL(window.location.href);
 		const id = url.searchParams.get('id');
@@ -109,6 +114,7 @@
 				<!-- Hidden input for currentUuid -->
 				<input type="hidden" name="currentUuid" bind:value={currentUuid} />
 				<input type="hidden" name="contractId" bind:value={contractId} />
+				<input type="hidden" name="walletId" bind:value={walletId} />
 
 				<!-- <label for="contractId">Contract ID</label>
 				<input type="text" name="contractId" id="contractId" placeholder="Contract ID" required /> -->
@@ -210,5 +216,9 @@
 
 	h2 {
 		@apply text-xl font-thin;
+	}
+
+	td {
+		@apply align-top;
 	}
 </style>
