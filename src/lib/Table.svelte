@@ -1,14 +1,7 @@
 <script lang="ts">
 	export let data = [
 		{
-			type: 'buy',
-			amount: 10,
-			price: 100
-		},
-		{
-			type: 'sell',
-			amount: 10,
-			price: 100
+			"No data": "No data"
 		}
 	];
 </script>
