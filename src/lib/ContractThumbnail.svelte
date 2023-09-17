@@ -4,6 +4,8 @@
     export let title: string;
     export let endDate: Date | null;
     export let href: string = '#';
+	export let believe: number;
+	export let cope: number;
 </script>
 
 <a
@@ -11,7 +13,7 @@
 	{href}
 	on:click
 >
-	<BelieveCope />
+	<BelieveCope {believe} {cope} />
 	<p class="text-white font-light overflow-y-auto">Name: {title}</p>
 	<p>end date: {endDate ? endDate.toLocaleDateString() : 'N/A'}</p>
 </a>

@@ -152,14 +152,16 @@ const updateOrderbook = async (type, operation, dataObject, userUuid) => {
 				newContracts.push({
 					uuid: contractId,
 					walletId: walletId,
-					amount: amtFilled
+					amount: amtFilled,
+					type: type
 				});
 			} else {
 				console.log('soldContracts', soldContracts)
 				soldContracts.push({
 					uuid: contractId,
 					walletId: walletId,
-					amount: amtFilled
+					amount: amtFilled,
+					type: type
 				});
 			}
 			curUserNetTokens += nettokens;

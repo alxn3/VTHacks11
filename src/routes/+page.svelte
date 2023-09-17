@@ -13,6 +13,7 @@
 		const snapshot = await getDocs(contractCollection);
 
 		contracts = snapshot.docs.map((doc) => doc.data());
+		console.log(contracts);
 	});
 </script>
 
@@ -32,6 +33,28 @@
 					title={contract.title}
 					endDate={contract.end_date ? new Date(contract.end_date) : null}
 					href={`/contract?id=${contract.id}`}
+					believe={(() => {
+						const book = contract.for_orderbook;
+						let ask =
+							book.asks && book.asks.length !== 0 ? book.asks[book.asks.length - 1].price : -1;
+						let bid =
+							book.bids && book.bids.length !== 0 ? book.bids[book.bids.length - 1].price : -1;
+						ask = ask === -1 ? bid : ask;
+						bid = bid === -1 ? ask : bid;
+						console.log(ask, bid);
+						return (ask + bid) / 2;
+					})()}
+					cope={(() => {
+						const book = contract.against_orderbook;
+						let ask =
+							book.asks && book.asks.length !== 0 ? book.asks[book.asks.length - 1].price : -1;
+						let bid =
+							book.bids && book.bids.length !== 0 ? book.bids[book.bids.length - 1].price : -1;
+						ask = ask === -1 ? bid : ask;
+						bid = bid === -1 ? ask : bid;
+						console.log(ask, bid);
+						return (ask + bid) / 2;
+					})()}
 				/>
 			{/each}
 		</div>

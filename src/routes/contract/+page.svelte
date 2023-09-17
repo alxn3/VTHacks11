@@ -3,12 +3,7 @@
 	import Button from '$lib/Button.svelte';
 	import CandleStickChart from '$lib/CandleStickChart.svelte';
 	import Table from '$lib/Table.svelte';
-	import {
-		collection,
-		getDocs,
-		query,
-		where
-	} from 'firebase/firestore';
+	import { collection, getDocs, query, where } from 'firebase/firestore';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import { currentAccountStore } from '../../lib/store';
@@ -58,7 +53,30 @@
 	<div class="flex justify-between">
 		<div class="space-y-2">
 			<h1 class="">{data.title}</h1>
-			<BelieveCope />
+			<BelieveCope
+				believe={(() => {
+					const book = data.for_orderbook;
+					let ask =
+						book.asks && book.asks.length !== 0 ? book.asks[book.asks.length - 1].price : -1;
+					let bid =
+						book.bids && book.bids.length !== 0 ? book.bids[book.bids.length - 1].price : -1;
+					ask = ask === -1 ? bid : ask;
+					bid = bid === -1 ? ask : bid;
+					console.log(ask, bid);
+					return (ask + bid) / 2;
+				})()}
+				cope={(() => {
+					const book = data.against_orderbook;
+					let ask =
+						book.asks && book.asks.length !== 0 ? book.asks[book.asks.length - 1].price : -1;
+					let bid =
+						book.bids && book.bids.length !== 0 ? book.bids[book.bids.length - 1].price : -1;
+					ask = ask === -1 ? bid : ask;
+					bid = bid === -1 ? ask : bid;
+					console.log(ask, bid);
+					return (ask + bid) / 2;
+				})()}
+			/>
 		</div>
 		<div class="w-10" />
 		<div class="text-right">
