@@ -105,16 +105,44 @@
 		</div>
 		<div class="grid grid-cols-[auto,auto,auto,auto,1fr] grid-rows-3 gap-x-3 gap-y-1">
 			<p>Believe:</p>
-			<p class="text-green-500">10 Shares</p>
+			<p class="text-green-500">
+				{(() => {
+					let sum = 0;
+					data.for_orderbook.asks?.forEach((d) => {
+						if (d.user === currentUuid) {
+							sum += d.amount;
+						}
+					});
+					return sum;
+				})()} Shares
+			</p>
 			<Button class="text-sm py-1 px-2 text-green-500" on:click={() => toggleForm('buyForShares')}
 				>Buy</Button
 			>
 			<Button class="text-sm py-1 px-2 text-green-500" on:click={() => toggleForm('sellForShares')}
 				>Sell</Button
 			>
-			<p class="text-right">8000</p>
+			<p class="text-right">
+				{(() => {
+					let sum = 0;
+					data.for_orderbook.asks?.forEach((d) => {
+						sum += d.amount;
+					});
+					return sum;
+				})()}
+			</p>
 			<p>Cope:</p>
-			<p class="text-red-500">10 Shares</p>
+			<p class="text-red-500">
+				{(() => {
+					let sum = 0;
+					data.against_orderbook.asks?.forEach((d) => {
+						if (d.user === currentUuid) {
+							sum += d.amount;
+						}
+					});
+					return sum;
+				})()} Shares
+			</p>
 			<Button class="text-sm py-1 px-2 text-red-500" on:click={() => toggleForm('buyAgainstShares')}
 				>Buy</Button
 			>
@@ -122,7 +150,15 @@
 				class="text-sm py-1 px-2 text-red-500"
 				on:click={() => toggleForm('sellAgainstShares')}>Sell</Button
 			>
-			<p class="text-right">6123</p>
+			<p class="text-right">
+				{(() => {
+					let sum = 0;
+					data.against_orderbook.asks?.forEach((d) => {
+						sum += d.amount;
+					});
+					return sum;
+				})()}
+			</p>
 		</div>
 	</div>
 
