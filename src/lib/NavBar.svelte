@@ -1,9 +1,10 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 
 	import Icon from '@iconify/svelte';
 	import { get, writable } from 'svelte/store';
 	import { currentAccountStore } from './store';
+	import { ethers } from 'ethers';
 
 	import {
 		updateUserData,
@@ -27,6 +28,41 @@
 		}
 		updateUserData();
 	});
+	let flowBalance = 0;
+	const getFlowBalance = async () => {
+		const flowAPI =
+			'https://docs-demo.flow-mainnet.quiknode.pro/v1/accounts/0x1e3c78c6d580273b?expand=keys,contracts';
+		await fetch(flowAPI)
+			.then((response) => response.json())
+			.then((data) => {
+				flowBalance = data.balance;
+				return data.balance;
+			})
+			.catch((err) => console.error(err));
+	};
+
+    // circle transfer to liquidity pool code
+    let usdcBalance = '0';
+    let transferAmount = '0';
+    let receiverAddress = '';
+    let provider: ethers.providers.Web3Provider | null = null;
+    let signer: ethers.Signer | null = null;
+    async function transferUSDC() {
+    try {
+      if (!provider || !signer || !receiverAddress || !transferAmount) return;
+
+      const usdcContractAddress = 'USDC_CONTRACT_ADDRESS'; // Replace with the actual USDC contract address
+      const usdcContractABI = ['function transfer(address, uint256) returns (bool)'];
+      const usdcContract = new ethers.Contract(usdcContractAddress, usdcContractABI, signer);
+
+      const tx = await usdcContract.transfer(receiverAddress, ethers.utils.parseUnits(transferAmount, 6));
+      await tx.wait();
+
+      usdcBalance = (await usdcContract.balanceOf(await signer.getAddress())).toString();
+    } catch (error) {
+      console.error('Error transferring USDC:', error);
+    }
+  }
 </script>
 
 <nav class="w-full bg-neutral-900 text-white">
@@ -39,7 +75,10 @@
 				{#if loggedIn}
 					<button
 						class="mx-4 text-lg border-2 border-black p-2 rounded-xl hover:border-gray-700 transition-all"
-						on:click={() => (addTokens = !addTokens)}>tokens: {$accountData.tokens}</button
+						on:click={() => {
+							addTokens = !addTokens;
+							getFlowBalance();
+						}}>tokens: {$accountData.tokens}</button
 					>
 					<a href="/profile">
 						<button
@@ -85,6 +124,9 @@
 						class="bg-black text-white p-2 rounded-xl border-2 border-opacity-0 hover:border-opacity-100 transition-all border-gray-700"
 						on:click={() => subtractTokensFromAccount(newTokens)}>Transfer out</button
 					>
+				</div>
+				<div>
+					Flow Balance: {flowBalance} FLOW.
 				</div>
 			</div>
 		</div>
