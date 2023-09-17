@@ -237,40 +237,32 @@
 	</div>
 </div>
 
-<div class="space-y-4">
+<div class="space-y-4 text-center">
 	<div class="border-[1px] border-neutral-700 rounded-xl bg-neutral-950 text-neutral-200 w-full">
 		<h2 class="p-2 text-center">Against</h2>
-		<table class="table-fixed w-full">
-			<thead>
-				<tr>
-					<th>Ask</th>
-					<th>Bid</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><Table data={data.against_orderbook.asks} /></td>
-					<td><Table data={data.against_orderbook.bids} /></td>
-				</tr>
-			</tbody>
-		</table>
+		<div class="flex w-full flex-wrap gap-2">
+			<div class="w-full">
+				<h3>Asks</h3>
+				<Table data={data.against_orderbook.asks} />
+			</div>
+			<div class="w-full">
+				<h3>Bids</h3>
+				<Table data={data.against_orderbook.bids} />
+			</div>
+		</div>
 	</div>
 	<div class="border-[1px] border-neutral-700 rounded-xl bg-neutral-950 text-neutral-200 w-full">
 		<h2 class="p-2 text-center">For</h2>
-		<table class="table-fixed w-full">
-			<thead>
-				<tr>
-					<th>Ask</th>
-					<th>Bid</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><Table data={data.for_orderbook.asks} /></td>
-					<td><Table data={data.for_orderbook.bids} /></td>
-				</tr>
-			</tbody>
-		</table>
+		<div class="flex w-full flex-wrap gap-2">
+			<div class="w-full">
+				<h3>Asks</h3>
+				<Table data={data.for_orderbook.asks} />
+			</div>
+			<div class="w-full">
+				<h3>Bids</h3>
+				<Table data={data.for_orderbook.bids} />
+			</div>
+		</div>
 	</div>
 </div>
 
@@ -288,9 +280,5 @@
 
 	h2 {
 		@apply text-xl font-thin;
-	}
-
-	td {
-		@apply align-top;
 	}
 </style>
